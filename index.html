@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fencil</title>
+  <link rel="icon" type="image/x-icon" href="media/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,600;1,300&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --accent: #f5c842;
+      --accent2: #e8503a;
+      --text: #e8e6df;
+      --muted: #7a7870;
+      --border: rgba(245,200,66,0.15);
+      --card-bg: rgba(255,255,255,0.03);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -300px; right: -300px;
+      width: 900px; height: 900px;
+      background: radial-gradient(circle, rgba(245,200,66,0.06) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .glow-left {
+      position: fixed;
+      bottom: -200px; left: -200px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(232,80,58,0.05) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 900px;
+      padding: 80px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 80px;
+    }
+
+    .site-header {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .site-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      color: var(--accent);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .site-tag::before {
+      content: '';
+      display: block;
+      width: 32px; height: 1px;
+      background: var(--accent);
+    }
+
+    .site-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(72px, 12vw, 140px);
+      line-height: 0.88;
+      color: var(--text);
+      letter-spacing: 0.01em;
+    }
+
+    .site-title span { color: var(--accent); }
+
+    .site-desc {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 480px;
+      margin-top: 4px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      animation: fadeUp 0.7s 0.15s ease both;
+    }
+
+    .card {
+      position: relative;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 36px 36px 32px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.25s;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .card:hover {
+      border-color: rgba(245,200,66,0.35);
+      transform: translateY(-3px);
+    }
+
+    .card-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.4rem;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .card-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.65;
+      flex: 1;
+    }
+
+    .card-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 8px;
+      transition: gap 0.2s;
+    }
+
+    .card:hover .card-link { gap: 12px; }
+    .card-link::after { content: '→'; }
+
+    .site-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      padding-top: 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      animation: fadeUp 0.7s 0.25s ease both;
+    }
+
+    .site-footer a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .site-footer a:hover { opacity: 0.7; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .page { padding: 60px 24px; gap: 56px; }
+      .cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="glow-left"></div>
+
+<div class="page">
+  <header class="site-header">
+    <div class="site-tag">fencil.github.io</div>
+    <h1 class="site-title">FENCIL<br><span>PROJECTS</span></h1>
+    <p class="site-desc">A collection of sites and tools. Pick one below.</p>
+  </header>
+
+  <div class="cards">
+    <a class="card" href="https://fencil.github.io/FencilCommissions/">
+      <div class="card-num">01 — Commissions</div>
+      <div class="card-title">DRUM CHARTS</div>
+      <p class="card-desc">Custom Paradiddle drum chart commissions. Pricing, terms of service, schedule, and portfolio all in one place.</p>
+      <div class="card-link">Visit site</div>
+    </a>
+
+    <a class="card" href="https://fencil.github.io/FencilServer/">
+      <div class="card-num">02 — Servers</div>
+      <div class="card-title">SERVER LIST</div>
+      <p class="card-desc">A live list of Minecraft servers with copy-to-clipboard IPs, modpack links, and online status indicators.</p>
+      <div class="card-link">Visit site</div>
+    </a>
+  </div>
+
+  <footer class="site-footer">
+    <span>Fencil</span>
+    <a href="https://discord.com/invite/Y3Pz2MZwe3" target="_blank">Discord →</a>
+  </footer>
+</div>
+</body>
+</html>
